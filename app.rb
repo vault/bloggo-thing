@@ -30,15 +30,15 @@ end
 
 # create a new post
 post '/' do
-  verify_authenticity!
-  data = JSON.parse params["data"]
-  halt 400 unless data["title"] && data["body"]
-  id = sanitize_title data["title"]
-  $DB.save_doc({"_id" => id,
-        "author" => @user["_id"],
-         "title" => data["title"],
-          "body" => data["body"],
-   "date_posted" => Time.now})
-  "\"#{data["title"]}\" posted"
+  halt 400 unless params[:hash] && params[:data] && params[:email]
+  email = params[:email]
+  @user = $DB.get email
+  data = JSON.parse decrypt_data!
+  status post_doc data
+  if status == 'new'
+    "\"#{data["title"]}\" posted"
+  else
+    "\"#{data["title"]}\" updated"
+  end
 end
 
