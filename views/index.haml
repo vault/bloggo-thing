@@ -1,1 +1,6 @@
-%p Trial?
+- @posts.each do |post|
+  %article
+    %h1= post["title"]
+    %p
+      :markdown
+        #{post["body"]}

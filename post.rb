@@ -9,14 +9,14 @@ PORT = 4567
 
 SITE = "#{HOST}:#{PORT}"
 
+#EMAIL = gets 'Email: '
 EMAIL = 'michaelabed@gmail.com'
 #PASSWORD = gets 'Password for key: '
 
-#CERTFILE = '/home/michael/Desktop/cert.pem'
+CERTFILE = '/home/michael/Desktop/cert.pem'
 KEYFILE = '/home/michael/Desktop/key.pem'
 
 KEY = OpenSSL::PKey::RSA.new(File.read(KEYFILE))
-#CERT = OpenSSL::X509::Certificate.new(File.read(CERTFILE))
 
 ARGV.each do |file|
   data = File.read(file).lines.to_a

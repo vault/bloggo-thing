@@ -24,6 +24,22 @@ helpers do
     data
   end
 
+  def in_hash_form users
+    us = {}
+    users.each do |u|
+      us[u["value"]["id"]] = u["value"]
+    end
+    us
+  end
+
+  def in_array_form posts
+    ps = []
+    posts.each do |post|
+      ps << post["value"]
+    end
+    ps
+  end
+
   def decrypt key, iv, data
     cipher = OpenSSL::Cipher.new('AES256').decrypt
     cipher.key = key

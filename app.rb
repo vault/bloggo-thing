@@ -14,17 +14,20 @@ PER_PAGE = 15
 # List posts
 get '/' do
   params[:page] ||= 1
-  skip = params[:page] * PER_PAGE
-  @posts = $DB.view("posts/by_date", :skip => skip, :limit => PER_PAGE)
-  @users = $DB.view("users/all")
+  skip = (params[:page]-1) * PER_PAGE
+  @posts = in_array_form $DB.view("posts/by_date", :skip => skip,
+                                  :limit => PER_PAGE,
+                                  :descending => true)["rows"]
+  @users = in_hash_form $DB.view("users/all")["rows"]
+  @title = "Index"
   haml :index
-  "Hello World!"
 end
 
 # Individual post
 get '/:title' do
-  @article = $DB.get(params[:name])
+  @article = $DB.get params[:name]
   @author = $DB.get @article[:author]
+  @title = @article.title
   haml :page
 end
 
@@ -36,9 +39,9 @@ post '/' do
   data = JSON.parse decrypt_data!
   status post_doc data
   if status == 'new'
-    "\"#{data["title"]}\" posted"
+    return "\"#{data["title"]}\" posted"
   else
-    "\"#{data["title"]}\" updated"
+    return "\"#{data["title"]}\" updated"
   end
 end
 

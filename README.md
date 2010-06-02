@@ -7,12 +7,10 @@ for basically one person, I didn't want to have to deal with anything like
 coding login pages or forms. Instead, we do things with cryptographic mumbo-jumbo,
 (semi-unrelated, ruby's OpenSSL documentation is horrible).
 
-Here's how it works. On your machine, you have a private key and a certificate.
-To post to the blog what you do is send a POST to the root URL. It should have
-two params: 'sig' and 'data'. 'data' is JSON. It has two fields, title and
-body. The sig is a digital signature for the data. The server checks that the
-public key of the signature matches the public key of the user stored in the
-database identified by their email address.
+We used to use keys and certificates, but it's slightly easier to just use keys. We now
+just encrypt the data over the wire, along with the email of whoever is posting.
+Look up the email addres in the db, and see if any of their keys work to decrypt it.
+If so, we assume it was from them and post it. If not, we give back error codes.
 
-Currently that's all there is to it. I haven't written the views yet, so there's
-not much else to check. This may or may not actually be secure...
+That's all there is to it. We have a rudimentary display of posts, but nothing 
+especially impressive. It's a work in progress.

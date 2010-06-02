@@ -1,6 +1,8 @@
 !!! 5
 %html
   %head
-    %title BLOGG!
+    %title= @title
   %body
-    = yield
+    %header
+    #content
+      =yield
