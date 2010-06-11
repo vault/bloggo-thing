@@ -13,7 +13,6 @@ SITE = "#{HOST}:#{PORT}"
 EMAIL = 'michaelabed@gmail.com'
 #PASSWORD = gets 'Password for key: '
 
-CERTFILE = '/home/michael/Desktop/cert.pem'
 KEYFILE = '/home/michael/Desktop/key.pem'
 
 KEY = OpenSSL::PKey::RSA.new(File.read(KEYFILE))
