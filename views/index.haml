@@ -1,6 +1,8 @@
 - @posts.each do |post|
   %article
     %h1= post["title"]
-    %p
-      :markdown
-        #{post["body"]}
+    %h2
+      by
+      = @users[post["author"]["name"]
+    :markdown
+      #{post["body"]}

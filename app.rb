@@ -1,32 +1,36 @@
 
-require 'sinatra'
 require 'rubygems'
-require 'couchrest'
+require 'sinatra'
+require 'json'
 require 'openssl'
 require 'haml'
-require 'bluecloth'
+require 'rdiscount'
+
+PER_PAGE = 15
+POSTS = {}
+USERS = {}
 
 require 'helpers'
 
-$DB = CouchRest.database!("http://127.0.0.1:5984/blog")
-PER_PAGE = 15
+configure do
+  read_all_users!
+  read_all_posts!
+end
 
 # List posts
 get '/' do
   params[:page] ||= 1
   skip = (params[:page]-1) * PER_PAGE
-  @posts = in_array_form $DB.view("posts/by_date", :skip => skip,
-                                  :limit => PER_PAGE,
-                                  :descending => true)["rows"]
-  @users = in_hash_form $DB.view("users/all")["rows"]
+  @posts = POSTS.values.sort{|x,y|x[:date_posted]<=>y[:date_posted]}[skip,skip+PER_PAGE]
+  @users = USERS
   @title = "Index"
   haml :index
 end
 
 # Individual post
 get '/:title' do
-  @article = $DB.get params[:name]
-  @author = $DB.get @article[:author]
+  @article = get_article params[:title]
+  @author = get_user @article[:author]
   @title = @article.title
   haml :page
 end
@@ -35,9 +39,9 @@ end
 post '/' do
   halt 400 unless params[:hash] && params[:data] && params[:email]
   email = params[:email]
-  @user = $DB.get email
+  @user = get_user email
   data = JSON.parse decrypt_data!
-  status post_doc data
+  status = post_doc data
   if status == 'new'
     return "\"#{data["title"]}\" posted"
   else

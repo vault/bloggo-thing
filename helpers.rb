@@ -4,7 +4,7 @@ helpers do
   def decrypt_data!
     encr_data = params[:data]
     request_hash = params[:hash]
-    keys = @user[:pub_keys]
+    keys = @user[:pub_keys].dup
     key = OpenSSL::PKey::RSA.new(keys.shift)
     begin
       hashstring = key.public_decrypt(request_hash)
@@ -24,22 +24,6 @@ helpers do
     data
   end
 
-  def in_hash_form users
-    us = {}
-    users.each do |u|
-      us[u["value"]["id"]] = u["value"]
-    end
-    us
-  end
-
-  def in_array_form posts
-    ps = []
-    posts.each do |post|
-      ps << post["value"]
-    end
-    ps
-  end
-
   def decrypt key, iv, data
     cipher = OpenSSL::Cipher.new('AES256').decrypt
     cipher.key = key
@@ -48,29 +32,63 @@ helpers do
   end
 
   def sanitize_title title
-    title.downcase.gsub(/[^a-z0-9]/, '-').squeeze('-').gsub(/^\-|\-$/, '')
+    title.downcase.gsub.(/'|"/,'').gsub(/[^a-z0-9]/, '-').squeeze('-').gsub(/^\-|\-$/, '')
   end
 
-  def post_doc data
-    halt 400 unless data["title"] && data["body"]
-    id = sanitize_title data["title"]
-    begin
-      doc = $DB.get id
-      $DB.save_doc({"_id" => id,
-                   "_rev" => doc["_rev"],
-                 "author" => @user["_id"],
-                  "title" => data["title"],
-                   "body" => data["body"],
-            "date_posted" => doc["date_posted"],
-           "date_updated" => Time.now})
-      status = "change"
-    rescue RestClient::ResourceNotFound
-      $DB.save_doc({"_id" => id,
-                 "author" => @user["_id"],
-                  "title" => data["title"],
-                   "body" => data["body"],
-            "date_posted" => Time.now})
-      status = "new"
+  def get_user name
+    if USERS[name]
+      return USERS[name]
+    else
+      halt 400
+    end
+  end
+
+  def get_article name
+    if POSTS[name]
+      return POSTS[name]
+    else
+      halt 404
+    end
+  end
+
+  def save_post data
+    clean_title = sanitize_title data[:title]
+    f = File.new("data/#{@user[:email]}/#{clean_title}.json", 'w')
+    unless POSTS[clean_title]
+      data[:date_posted] = Time.now
+      data[:clean_title] = clean_title
+      f.write data.to_json
+      POSTS[clean_title] = data
+    else
+      data[:date_updated] = Time.now
+      f.write data.to_json
+    end
+  end
+
+end
+
+def read_all_users!
+  Dir.chdir("data") do
+    Dir.glob("*@*") do |dir|
+      Dir.chdir(dir) do
+        user = JSON.parse(File.read 'userinfo.json')
+        keys = JSON.parse(File.read 'keys.json')
+        user[:public_keys] = keys
+        USERS[user[:email]] = user
+      end
+    end
+  end
+end
+
+def read_all_posts!
+  Dir.chdir("data") do 
+    Dir.glob("*@*") do |dir|
+      Dir.chdir("#{dir}/posts") do
+        Dir.glob("*.json") do |file|
+          data = JSON.parse(File.read file)
+          POSTS[data[:clean_title]] = data
+        end
+      end
     end
   end
 end
