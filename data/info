@@ -1,8 +1,0 @@
-
-This folder is where all the data for the blog is kept.
-
-Users each get their own directory. This is named after their email
-address so as to be easy to identify them by. Seeing as this is intended
-to be for one person, there should really only ever be one here, but I'd
-like for the system to be flexible enough in case I want to let multiple
-people use the  blog later.

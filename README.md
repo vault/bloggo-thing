@@ -1,16 +1,23 @@
 
-Blog Thing
-===========
+Blogg-O Thing
+==============
 
-This is a blog application on top of Sinatraa and CouchDB. Since it's intended
-for basically one person, I didn't want to have to deal with anything like
-coding login pages or forms. Instead, we do things with cryptographic mumbo-jumbo,
-(semi-unrelated, ruby's OpenSSL documentation is horrible).
+This is a blog application on top of Sinatra. Since it's intended for
+single-person use, I didn't want to have to deal with anything like
+coding login pages or forms. Rather than that, a public/private key system
+is used, and posting is accomplished with a simple script. You can write in
+your favorite editor and post it from the command line when you're done.
 
-We used to use keys and certificates, but it's slightly easier to just use keys. We now
-just encrypt the data over the wire, along with the email of whoever is posting.
-Look up the email addres in the db, and see if any of their keys work to decrypt it.
-If so, we assume it was from them and post it. If not, we give back error codes.
+Storage-wise all posts and user information is stored in simple files. We
+keep it simple by just storing everything in memory while the application
+is running. A text representation of one person's writing will probably
+never exceed a couple megabytes. Even with the little extra overhead
+created by extra metadata Ruby stores in Objects, this still pales in
+comparison to what's required to even run a simple database.
 
-That's all there is to it. We have a rudimentary display of posts, but nothing 
-especially impressive. It's a work in progress.
+One thing intentionally missing from this application is a comments system.
+If someone would like to comment on something your write they can email
+you, or start a thread on any of the multitude of site's dedicated to
+commenting on articles like Reddit or Hacker News..
+
+This is still a work in progress.
