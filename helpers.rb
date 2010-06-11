@@ -2,9 +2,9 @@
 helpers do
   # make sure the person is who they say they are
   def decrypt_data!
-    encr_data = params[:data]
-    request_hash = params[:hash]
-    keys = @user[:pub_keys].dup
+    encr_data = params['data']
+    request_hash = params['hash']
+    keys = @user['pub_keys'].dup
     key = OpenSSL::PKey::RSA.new(keys.shift)
     begin
       hashstring = key.public_decrypt(request_hash)
@@ -52,19 +52,19 @@ helpers do
   end
 
   def save_post data
-    clean_title = sanitize_title data[:title]
-    f = File.new("data/#{@user[:email]}/#{clean_title}.json", 'w')
+    clean_title = sanitize_title data['title']
+    f = File.new("data/#{@user['email']}/#{clean_title}.json", 'w')
     unless POSTS[clean_title]
-      data[:date_posted] = Time.now
-      data[:clean_title] = clean_title
+      data['date_posted'] = Time.now
+      data['clean_title'] = clean_title
+      data['author'] = @user['email']
       f.write data.to_json
       POSTS[clean_title] = data
     else
-      data[:date_updated] = Time.now
+      data['date_updated'] = Time.now
       f.write data.to_json
     end
   end
-
 end
 
 def read_all_users!
@@ -73,8 +73,8 @@ def read_all_users!
       Dir.chdir(dir) do
         user = JSON.parse(File.read 'userinfo.json')
         keys = JSON.parse(File.read 'keys.json')
-        user[:public_keys] = keys
-        USERS[user[:email]] = user
+        user['pub_keys'] = keys
+        USERS[user['email']] = user
       end
     end
   end
@@ -86,7 +86,7 @@ def read_all_posts!
       Dir.chdir("#{dir}/posts") do
         Dir.glob("*.json") do |file|
           data = JSON.parse(File.read file)
-          POSTS[data[:clean_title]] = data
+          POSTS[data['clean_title']] = data
         end
       end
     end

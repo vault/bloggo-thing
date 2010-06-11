@@ -19,9 +19,9 @@ end
 
 # List posts
 get '/' do
-  params[:page] ||= 1
-  skip = (params[:page]-1) * PER_PAGE
-  @posts = POSTS.values.sort{|x,y|x[:date_posted]<=>y[:date_posted]}[skip,skip+PER_PAGE]
+  params['page'] ||= 1
+  skip = (params['page']-1) * PER_PAGE
+  @posts = POSTS.values.sort{|x,y|x['date_posted']<=>y['date_posted']}[skip,skip+PER_PAGE]
   @users = USERS
   @title = "Index"
   haml :index
@@ -29,23 +29,23 @@ end
 
 # Individual post
 get '/:title' do
-  @article = get_article params[:title]
-  @author = get_user @article[:author]
-  @title = @article.title
+  @article = get_article params['title']
+  @author = get_user @article['author']
+  @title = @article['title']
   haml :page
 end
 
 # create a new post
 post '/' do
-  halt 400 unless params[:hash] && params[:data] && params[:email]
-  email = params[:email]
+  halt 400 unless params['hash'] && params['data'] && params['email']
+  email = params['email']
   @user = get_user email
   data = JSON.parse decrypt_data!
   status = post_doc data
   if status == 'new'
-    return "\"#{data["title"]}\" posted"
+    return "\"#{data['title']}\" posted"
   else
-    return "\"#{data["title"]}\" updated"
+    return "\"#{data['title']}\" updated"
   end
 end
 

@@ -3,6 +3,6 @@
     %h1= post["title"]
     %h2
       by
-      = @users[post["author"]["name"]
+      = @users[post["author"]]["name"]
     :markdown
       #{post["body"]}
