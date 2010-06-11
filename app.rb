@@ -21,7 +21,7 @@ end
 get '/' do
   params['page'] ||= 1
   skip = (params['page']-1) * PER_PAGE
-  @posts = POSTS.values.sort{|x,y|x['date_posted']<=>y['date_posted']}[skip,skip+PER_PAGE]
+  @posts = POSTS.values.sort{|x,y|y['date_posted']<=>x['date_posted']}[skip,skip+PER_PAGE]
   @users = USERS
   @title = "Index"
   haml :index
@@ -41,8 +41,8 @@ post '/' do
   email = params['email']
   @user = get_user email
   data = JSON.parse decrypt_data!
-  status = post_doc data
-  if status == 'new'
+  stat = save_post data
+  if stat == :new
     return "\"#{data['title']}\" posted"
   else
     return "\"#{data['title']}\" updated"

@@ -32,7 +32,7 @@ helpers do
   end
 
   def sanitize_title title
-    title.downcase.gsub.(/'|"/,'').gsub(/[^a-z0-9]/, '-').squeeze('-').gsub(/^\-|\-$/, '')
+    title.downcase.gsub(/'|"/,'').gsub(/[^a-z0-9]/, '-').squeeze('-').gsub(/^\-|\-$/, '')
   end
 
   def get_user name
@@ -53,17 +53,24 @@ helpers do
 
   def save_post data
     clean_title = sanitize_title data['title']
-    f = File.new("data/#{@user['email']}/#{clean_title}.json", 'w')
-    unless POSTS[clean_title]
-      data['date_posted'] = Time.now
-      data['clean_title'] = clean_title
-      data['author'] = @user['email']
-      f.write data.to_json
-      POSTS[clean_title] = data
-    else
-      data['date_updated'] = Time.now
-      f.write data.to_json
+    data['clean_title'] = clean_title
+    stat = nil
+    File.open("data/#{@user['email']}/posts/#{clean_title}.json", 'w') do |f|
+      unless POSTS[clean_title]
+        data['date_posted'] = Time.now
+        data['author'] = @user['email']
+        f.write data.to_json
+        POSTS[clean_title] = data
+        stat = :new
+      else
+        post = POSTS[clean_title]
+        data['date_updated'] = Time.now
+        post.merge! data
+        f.write post.to_json
+        stat = :updated
+      end
     end
+    return stat
   end
 end
 
@@ -86,6 +93,8 @@ def read_all_posts!
       Dir.chdir("#{dir}/posts") do
         Dir.glob("*.json") do |file|
           data = JSON.parse(File.read file)
+          data['date_posted'] = Time.parse(data['date_posted'])
+          data['date_updated'] = Time.parse(data['date_updated']) if data['date_updated']
           POSTS[data['clean_title']] = data
         end
       end
