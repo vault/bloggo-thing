@@ -5,6 +5,7 @@ require 'json'
 require 'openssl'
 require 'haml'
 require 'rdiscount'
+require 'lib/smartmd.rb'
 
 PER_PAGE = 15
 POSTS = {}
@@ -29,9 +30,9 @@ end
 
 # Individual post
 get '/:title' do
-  @article = get_article params['title']
-  @author = get_user @article['author']
-  @title = @article['title']
+  @post = get_article params['title']
+  @author = get_user @post['author']
+  @title = @post['title']
   haml :page
 end
 

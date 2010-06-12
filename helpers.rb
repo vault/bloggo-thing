@@ -102,3 +102,12 @@ def read_all_posts!
   end
 end
 
+class Time
+  def machine
+    strftime("%Y-%m-%d")
+  end
+  def readable
+    strftime("%B %d, %Y")
+  end
+end
+

@@ -4,5 +4,14 @@
     %title= @title
   %body
     %header
+      %h1 BLOG TITLE
+      %h2 BLOG SUBTITLE
+    #sidebar
+      %ul
+        %li Stuff
+        %li More Stuff
     #content
-      =yield
+      = yield
+    #footer<
+      &copy; 2010 Michael Abed
+
