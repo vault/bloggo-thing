@@ -1,0 +1,7 @@
+%article
+  %h1= @article['title']
+  %h2
+    by
+    = @author["name"]
+  :markdown
+    #{@article['body']}
