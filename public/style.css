@@ -1,11 +1,47 @@
+/* @override http://localhost:4567/style.css */
+
 html {
   height: 100%;
   margin-bottom: 1px;
 }
 
 body {
-  margin-left: 50px;
-  margin-top: 10%;
+	margin: 10%;
+	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
 }
 
+body > header {
+    text-align: right;
+}
 
+body header h1 {
+    font-size: 15pt;
+    font-weight: bold;
+}
+
+#sidebar {
+    float: right;
+    text-align: right;
+}
+
+#content {
+    width: 80%;
+}
+
+#footer {
+    width: 80%;
+    margin-top: 2em;
+}
+
+div.post header {
+    
+}
+
+div.post header h1 {
+	margin: 0;
+}
+
+div.post header h2 {
+	margin: 0;
+    font-size: 1em;
+}

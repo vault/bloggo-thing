@@ -4,9 +4,10 @@
       %h1= @post['title']
       %h2<
         by
-        = @author['name']
-    :smartmd
-      #{@post['body']}
+        = ' ' + @author['name']
+    .markdown
+      :smartmd
+        #{@post['body']}
   .timestamps<
     %span.pubdate<
       posted

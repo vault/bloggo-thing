@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'rubygems'
 require 'openssl'
 require 'json'
 require 'rest_client'
@@ -9,11 +10,10 @@ PORT = 4567
 
 SITE = "#{HOST}:#{PORT}"
 
-#EMAIL = gets 'Email: '
-EMAIL = 'michaelabed@gmail.com'
-#PASSWORD = gets 'Password for key: '
+CONFIG = JSON.parse(File.read("#{ENV["HOME"]}/.blogidentity"))
 
-KEYFILE = '/home/michael/Desktop/key.pem'
+EMAIL = CONFIG['email']
+KEYFILE = CONFIG['keyfile']
 
 KEY = OpenSSL::PKey::RSA.new(File.read(KEYFILE))
 

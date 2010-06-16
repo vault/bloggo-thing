@@ -7,12 +7,14 @@
         %h2<
           by
           = ' ' + @users[post['author']]['name']
-      :smartmd
-        #{post['body']}
+      .markdown
+        :smartmd
+          #{post['body']}
     .timestamps
       %span.pudate<
         %time{:datetime => "#{post['date_posted'].machine}", :pubdate => true}
-          = post['date_posted'].readable
+          posted
+          = ' ' + post['date_posted'].readable
       - if post['date_updated']
         %span.last_updated<
           last updated
