@@ -61,6 +61,7 @@ helpers do
         data['author'] = @user['email']
         f.write data.to_json
         POSTS[clean_title] = data
+        SORTED_POSTS.unshift data
         stat = :new
       else
         post = POSTS[clean_title]
@@ -71,6 +72,23 @@ helpers do
       end
     end
     return stat
+  end
+
+  def firstpage?
+    if @page
+      @page == 1
+    else
+      false
+    end
+  end
+
+  def lastpage?
+    if @page
+      skip = @page.pred * PER_PAGE
+      skip + PER_PAGE >= POSTS.size
+    else
+      false
+    end
   end
 end
 
@@ -96,10 +114,15 @@ def read_all_posts!
           data['date_posted'] = Time.parse(data['date_posted'])
           data['date_updated'] = Time.parse(data['date_updated']) if data['date_updated']
           POSTS[data['clean_title']] = data
+          SORTED_POSTS << data
         end
       end
     end
   end
+end
+
+def sort_posts!
+  SORTED_POSTS.sort!{|x,y|y['date_posted']<=>x['date_posted']}
 end
 
 class Time

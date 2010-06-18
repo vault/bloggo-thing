@@ -5,16 +5,16 @@
       %h2<
         by
         = ' ' + @author['name']
+    .timestamps<
+      %span.pubdate<
+        posted
+        %time{:datetime => "#{@post['date_posted'].machine}", :pubdate => true}<
+          = @post['date_posted'].readable + ','
+      - if @post['date_updated']
+        %span.last_updated<
+          last updated
+          %time{:datetime => "#{@post['date_updated'].machine}"}<
+            = @post['date_updated'].readable
     .markdown
       :smartmd
         #{@post['body']}
-  .timestamps<
-    %span.pubdate<
-      posted
-      %time{:datetime => "#{@post['date_posted'].machine}", :pubdate => true}<
-        = @post['date_posted'].readable + ','
-    - if @post['date_updated']
-      %span.last_updated<
-        last updated
-        %time{:datetime => "#{@post['date_updated'].machine}"}<
-          = @post['date_updated'].readable

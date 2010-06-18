@@ -7,16 +7,23 @@
         %h2<
           by
           = ' ' + @users[post['author']]['name']
+      .timestamps
+        %span.pudate<
+          %time{:datetime => "#{post['date_posted'].machine}", :pubdate => true}
+            posted
+            = ' ' + post['date_posted'].readable
+        - if post['date_updated']
+          %span.last_updated<
+            last updated
+            %time{:datetime => "#{post['date_updated'].machine}"}
+              = post['date_updated'].readable
       .markdown
         :smartmd
           #{post['body']}
-    .timestamps
-      %span.pudate<
-        %time{:datetime => "#{post['date_posted'].machine}", :pubdate => true}
-          posted
-          = ' ' + post['date_posted'].readable
-      - if post['date_updated']
-        %span.last_updated<
-          last updated
-          %time{:datetime => "#{post['date_updated'].machine}"}
-            = post['date_updated'].readable
+
+- if POSTS.size > @posts.size
+  #pagination
+    - unless lastpage?
+      %a{:href => "?page=#{@page+1}"} Older
+    - unless firstpage?
+      %a{:href => "?page=#{@page-1}"} Newer

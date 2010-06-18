@@ -7,8 +7,9 @@ require 'haml'
 require 'rdiscount'
 require 'lib/smartmd.rb'
 
-PER_PAGE = 15
+PER_PAGE = 2
 POSTS = {}
+SORTED_POSTS = []
 USERS = {}
 
 require 'helpers'
@@ -16,13 +17,14 @@ require 'helpers'
 configure do
   read_all_users!
   read_all_posts!
+  sort_posts!
 end
 
 # List posts
 get '/' do
-  params['page'] ||= 1
-  skip = (params['page']-1) * PER_PAGE
-  @posts = POSTS.values.sort{|x,y|y['date_posted']<=>x['date_posted']}[skip,skip+PER_PAGE]
+  @page = params['page'] ? params['page'].to_i : 1
+  skip = @page.pred * PER_PAGE
+  @posts = SORTED_POSTS[skip...skip+PER_PAGE]
   @users = USERS
   @title = "Index"
   haml :index
