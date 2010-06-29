@@ -60,10 +60,7 @@ helpers do
 
   def posts_array posts
     posts.collect! { |lm| lm['value'] }
-    posts.each do |post|
-      post['date_posted'] = Time.parse post['date_posted']
-      post['date_updated'] = Time.parse post['date_updated'] if post['date_updated']
-    end
+    posts.each {|p| parse_times! p }
     return posts
   end
 
@@ -85,6 +82,11 @@ helpers do
 
   def doc_count
     settings.db.view('posts/count')['rows'][0]['value']
+  end
+
+  def parse_times! post
+    post['date_posted'] = Time.parse post['date_posted']
+    post['date_updated'] = Time.parse post['date_updated'] if post['date_updated']
   end
 
   def firstpage?

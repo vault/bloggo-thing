@@ -32,6 +32,7 @@ end
 # Individual post
 get '/:title' do
   @post = get_article params['title']
+  parse_times! @post
   @author = get_user @post['author']
   @title = @post['title']
   haml :page
