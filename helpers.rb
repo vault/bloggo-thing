@@ -75,6 +75,7 @@ helpers do
       :updated
     rescue RestClient::ResourceNotFound
       data['date_posted'] = Time.now
+      data['author'] = @user['_id']
       settings.db.save_doc data
       :new
     end

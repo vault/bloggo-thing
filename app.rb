@@ -24,7 +24,6 @@ get '/' do
                                         :limit => settings.per_page,
                                         :descending => true)['rows']
   @users = usershash
-  $stderr.puts @users
   @title = "Index"
   haml :index
 end
