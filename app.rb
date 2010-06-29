@@ -2,6 +2,7 @@
 require 'rubygems'
 require 'sinatra'
 require 'json'
+require 'couchrest'
 require 'openssl'
 require 'haml'
 require 'rdiscount'
@@ -39,7 +40,7 @@ get '/:title' do
 end
 
 # create a new post
-post '/' do
+put '/' do
   halt 400 unless params['hash'] && params['data'] && params['email']
   email = params['email']
   @user = get_user email

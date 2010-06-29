@@ -34,7 +34,7 @@ ARGV.each do |file|
 
   encr_hash = KEY.private_encrypt("#{iv}#{hash}")
 
-  resp = RestClient.post SITE, :hash => encr_hash, :data => encr, :email => EMAIL
+  resp = RestClient.put SITE, :hash => encr_hash, :data => encr, :email => EMAIL
   puts resp.body
 end
 

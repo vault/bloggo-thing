@@ -1,28 +1,46 @@
 /* @override http://localhost:4567/style.css */
 
+/* 
+ * Whenever I get a domain registered or something
+ * I'm going to use some fonts from TypeKit
+ * Fonts we need: Junction (body text)
+ *
+ *
+ */
+
+/*@import url("http://kernest.com/fonts/junction.css");*/
+/*@import url("http://kernest.com/fonts/tex-gyre-pagella-regular.css");*/
+/*@import url("http://kernest.com/fonts/tex-gyre-pagella-bold.css");*/
+@import url("http://kernest.com/fonts/inconsolata.css");
+
 html {
   height: 100%;
   margin-bottom: 1px;
 }
 
 body {
+  margin-top: 2em;
   margin-left: auto;
   margin-right: auto;
   width: 80%;
-	font-family:  Helvetica, Arial, Geneva, sans-serif;
+  font-family:  Helvetica, Arial, sans-serif;
+}
+
+h1, h2, h3 {
+  /*font-family: "Tex Gyre Pagella";*/
 }
 
 body > header {
   margin-bottom: 2em;
   width: 100%;
   text-align: center;
-  font-family: Optima
 }
 
 body > header h1 {
   margin: 0;
-  font-size: 21pt;
+  font-size: 34pt;
   font-weight: bold;
+  font-family: "Tex Gyre Pagella";
 } 
 
 body > header a {
@@ -41,17 +59,18 @@ body > header h2 {
 
 #sidebar ul {
   margin-top: 8em;
+  margin-bottom: 8em;
 }
 
 #sidebar li {
   list-style-type: none;
   font-style: italic;
+  font-size: 13pt;
 }
 
 #content {
   margin-top: 4em;
-  margin-left: 5%;
-  width: 60%;
+  width: 65%;
 }
 
 #footer {
@@ -59,6 +78,10 @@ body > header h2 {
   text-align: center;
   margin-top: 2em;
   font-size: 8pt;
+}
+
+#pagination a {
+  margin: .25em;
 }
 
 article {
@@ -71,15 +94,14 @@ article header {
 }
 
 article header h1 {
-	margin: 0;
-  font-size: 22pt;
+  margin: 0;
+  font-size: 21pt;
   font-weight: bold;
-  font-family: Optima
 }
 
 article header h2 {
-	margin: 0;
-  font-size: 12pt;
+  margin: 0;
+  font-size: 13pt;
   font-weight: normal;
   font-style: italic;
 }
@@ -88,10 +110,39 @@ article header a {
   text-decoration: none;
 }
 
-article .markdown {
+.markdown {
   margin-left: 1.5em;
+  text-align: justify;
+  line-height: 1.4em;
+  font-size: 13pt;
+}
+
+.markdown p {
+  margin: .75em 0;
+  padding: 0;
+}
+
+.markdown pre {
+  margin: 2em;
+  padding: 1em;
+  background-color: #eee;
+  font-family: inconsolata;
+  font-size: 13pt;
+}
+
+.markdown blockquote {
+  margin: .5em 1em;
+  padding: 0 1em;
+  border-left: thin solid black;
+}
+
+.markdown ul, .markdown ol {
+  margin: 0;
+  margin-left: 2em;
+  padding: 0;
 }
 
 .timestamps {
   font-size: 10pt;
 }
+
