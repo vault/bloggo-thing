@@ -8,25 +8,23 @@ require 'haml'
 require 'rdiscount'
 require 'lib/smartmd.rb'
 
-PER_PAGE = 2
-POSTS = {}
-SORTED_POSTS = []
-USERS = {}
-
 require 'helpers'
 
 configure do
-  read_all_users!
-  read_all_posts!
-  sort_posts!
+  set :db, CouchRest.database!("localhost:5984/blog")
+  set :per_page, 2
 end
 
 # List posts
 get '/' do
   @page = params['page'] ? params['page'].to_i : 1
-  skip = @page.pred * PER_PAGE
-  @posts = SORTED_POSTS[skip...skip+PER_PAGE]
-  @users = USERS
+  skip = @page.pred * settings.per_page
+  @posts = posts_array settings.db.view('posts/by_date',
+                                        :skip => skip,
+                                        :limit => settings.per_page,
+                                        :descending => true)['rows']
+  @users = usershash
+  $stderr.puts @users
   @title = "Index"
   haml :index
 end

@@ -3,7 +3,7 @@
     .post
       %header
         %h1
-          %a{:href => "/#{post['clean_title']}"}= post['title']
+          %a{:href => "/#{post['id']}"}= post['title']
         %h2<
           by
           = ' ' + @users[post['author']]['name']
@@ -15,7 +15,7 @@
         :smartmd
           #{post['body']}
 
-- if POSTS.size > @posts.size
+- if doc_count > @posts.size
   #pagination
     - unless lastpage?
       %a{:href => "?page=#{@page+1}"} Older

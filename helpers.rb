@@ -1,10 +1,9 @@
 
 helpers do
-  # make sure the person is who they say they are
   def decrypt_data!
     encr_data = params['data']
     request_hash = params['hash']
-    keys = @user['pub_keys'].dup
+    keys = @user['pub_keys']
     key = OpenSSL::PKey::RSA.new(keys.shift)
     begin
       hashstring = key.public_decrypt(request_hash)
@@ -36,42 +35,56 @@ helpers do
   end
 
   def get_user name
-    if USERS[name]
-      return USERS[name]
-    else
+    begin
+      settings.db.get name
+    rescue RestClient::ResourceNotFound
       halt 400
     end
   end
 
   def get_article name
-    if POSTS[name]
-      return POSTS[name]
-    else
+    begin
+      return settings.db.get name
+    rescue RestClient::ResourceNotFound
       halt 404
     end
   end
 
+  def usershash
+    h = {}
+    settings.db.view('users/all')['rows'].each do |row|
+      h[row['id']] = row['value']
+    end
+    h
+  end
+
+  def posts_array posts
+    posts.collect! { |lm| lm['value'] }
+    posts.each do |post|
+      post['date_posted'] = Time.parse post['date_posted']
+      post['date_updated'] = Time.parse post['date_updated'] if post['date_updated']
+    end
+    return posts
+  end
+
   def save_post data
     clean_title = sanitize_title data['title']
-    data['clean_title'] = clean_title
-    stat = nil
-    File.open("data/#{@user['email']}/posts/#{clean_title}.json", 'w') do |f|
-      unless POSTS[clean_title]
-        data['date_posted'] = Time.now
-        data['author'] = @user['email']
-        f.write data.to_json
-        POSTS[clean_title] = data
-        SORTED_POSTS.unshift data
-        stat = :new
-      else
-        post = POSTS[clean_title]
-        data['date_updated'] = Time.now
-        post.merge! data
-        f.write post.to_json
-        stat = :updated
-      end
+    data['_id'] = clean_title
+    begin
+      old = settings.db.get clean_title
+      data['date_updated'] = Time.now
+      old.merge! data
+      settings.db.save_doc old
+      :updated
+    rescue RestClient::ResourceNotFound
+      data['date_posted'] = Time.now
+      settings.db.save_doc data
+      :new
     end
-    return stat
+  end
+
+  def doc_count
+    settings.db.view('posts/count')['rows'][0]['value']
   end
 
   def firstpage?
@@ -84,53 +97,15 @@ helpers do
 
   def lastpage?
     if @page
-      skip = @page.pred * PER_PAGE
-      skip + PER_PAGE >= POSTS.size
+      skip = @page.pred * settings.per_page
+      skip + settings.per_page >= doc_count
     else
       false
     end
   end
 end
 
-def read_all_users!
-  Dir.chdir("data") do
-    Dir.glob("*@*") do |dir|
-      Dir.chdir(dir) do
-        user = JSON.parse(File.read 'userinfo.json')
-        keys = JSON.parse(File.read 'keys.json')
-        user['pub_keys'] = keys
-        USERS[user['email']] = user
-      end
-    end
-  end
-end
-
-def read_all_posts!
-  Dir.chdir("data") do 
-    Dir.glob("*@*") do |dir|
-      Dir.chdir("#{dir}/posts") do
-        Dir.glob("*.json") do |file|
-          data = JSON.parse(File.read file)
-          data['date_posted'] = Time.parse(data['date_posted'])
-          data['date_updated'] = Time.parse(data['date_updated']) if data['date_updated']
-          POSTS[data['clean_title']] = data
-          SORTED_POSTS << data
-        end
-      end
-    end
-  end
-end
-
-def sort_posts!
-  SORTED_POSTS.sort!{|x,y|y['date_posted']<=>x['date_posted']}
-end
-
 class Time
-  def machine
-    strftime("%Y-%m-%d")
-  end
-  def readable
-    strftime("%B %d, %Y")
-  end
+  def machine; strftime("%Y-%m-%d"); end
+  def readable; strftime("%B %d, %Y"); end
 end
-
